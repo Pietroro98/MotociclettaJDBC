@@ -3,13 +3,16 @@ package it.prova.motociclettajdbc.test;
 import it.prova.motociclettajdbc.dao.MotociclettaDAO;
 import it.prova.motociclettajdbc.model.Motocicletta;
 
+import javax.swing.*;
+import java.awt.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class TestInsertMotocicletta {
     public static void main(String[] args) throws ParseException {
-        System.out.println("Inizio TEST....");
+     /*   System.out.println("Inizio TEST....");
 
         MotociclettaDAO motociclettaDaoInstance = new MotociclettaDAO();
         int quantiSonoAttualmentePresenti = -1;
@@ -42,6 +45,88 @@ public class TestInsertMotocicletta {
 
         System.out.println("################### test FINE ###################################");
         System.out.println("#####################################################################");
+*/
+        System.out.println("Inizio....");
 
+        MotociclettaDAO motociclettaDaoInstance = new MotociclettaDAO();
+
+        // conteggio iniziale
+        List<Motocicletta> attualmentePresenti = motociclettaDaoInstance.findAll();
+        int quantiPrima = attualmentePresenti.size();
+
+        System.out.println("Motociclette presenti prima: " + quantiPrima);
+
+        // campi input
+        JTextField marcaField = new JTextField(20);
+        JTextField modelloField = new JTextField(20);
+        JTextField cilindrataField = new JTextField(20);
+        JTextField dataField = new JTextField(20);
+
+        // pannello verticale
+        JPanel panel = new JPanel(new GridLayout(4,2,5,5));
+
+        panel.add(new JLabel("Marca:"));
+        panel.add(marcaField);
+
+        panel.add(new JLabel("Modello:"));
+        panel.add(modelloField);
+
+        panel.add(new JLabel("Cilindrata (intero):"));
+        panel.add(cilindrataField);
+
+        panel.add(new JLabel("Data immatricolazione (dd-MM-yyyy):"));
+        panel.add(dataField);
+
+        int scelta = JOptionPane.showConfirmDialog(
+                null,
+                panel,
+                "Inserisci nuova Motocicletta",
+                JOptionPane.OK_CANCEL_OPTION
+        );
+
+        if (scelta != JOptionPane.OK_OPTION) {
+            System.out.println("Operazione annullata");
+            return;
+        }
+
+        try {
+
+            String marca = marcaField.getText();
+            String modello = modelloField.getText();
+            int cilindrata = Integer.parseInt(cilindrataField.getText());
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            Date dataImmatricolazione = sdf.parse(dataField.getText());
+
+            Motocicletta nuovaMoto = new Motocicletta(
+                    marca,
+                    modello,
+                    cilindrata,
+                    dataImmatricolazione
+            );
+
+            motociclettaDaoInstance.insert(nuovaMoto);
+
+            // verifica insert
+            int quantiDopo = motociclettaDaoInstance.findAll().size();
+
+            if (quantiDopo != quantiPrima + 1)
+                throw new AssertionError("Insert FAILED");
+
+            JOptionPane.showMessageDialog(null,
+                    "Insert eseguita con successo!\n" +
+                            "Prima: " + quantiPrima +
+                            "\nDopo: " + quantiDopo);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            JOptionPane.showMessageDialog(null,
+                    "Errore inserimento: " + e.getMessage());
+
+        }
+
+        System.out.println("Test terminato");
     }
 }

@@ -75,6 +75,15 @@ public class MotociclettaDAO {
 
             rs = ps.executeQuery();
 
+            if (rs.next()) {
+                result = new Motocicletta();
+                result.setId(rs.getLong("id"));
+                result.setMarca(rs.getString("marca"));
+                result.setModello(rs.getString("modello"));
+                result.setCilindrata(rs.getInt("cilindrata"));
+                result.setDataImmatricolazione(rs.getDate("data_immatricolazione"));
+            }
+
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -106,6 +115,82 @@ public class MotociclettaDAO {
             ps.setString(2, input.getModello());
             ps.setInt(3, input.getCilindrata());
             ps.setDate(4, new java.sql.Date(input.getDataImmatricolazione().getTime()));
+
+            result = ps.executeUpdate();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+            try {
+                ps.close();
+                c.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
+    }
+
+    // =============================================== UPDATE
+    public int update(Motocicletta input) {
+
+        if (input == null || input.getId() < 1) {
+            return 0;
+        }
+
+        Connection c = null;
+        PreparedStatement ps = null;
+        int result = 0;
+
+        try {
+
+            c = MyConnection.getConnection();
+            ps = c.prepareStatement("update motocicletta set marca=?, modello=?, cilindrata=?, data_immatricolazione=? where id=?;");
+            ps.setString(1, input.getMarca());
+            ps.setString(2, input.getModello());
+            ps.setInt(3, input.getCilindrata());
+            ps.setDate(4, new java.sql.Date(input.getDataImmatricolazione().getTime()));
+            ps.setLong(5, input.getId());
+
+            result = ps.executeUpdate();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+            try {
+                ps.close();
+                c.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
+    }
+
+    // =============================================== DELETE
+    public int delete(Long idMotociclettaToDelete) {
+
+        if (idMotociclettaToDelete == null || idMotociclettaToDelete < 1) {
+            return 0;
+        }
+
+        Connection c = null;
+        PreparedStatement ps = null;
+        int result = 0;
+
+        try {
+
+            c = MyConnection.getConnection();
+            ps = c.prepareStatement("delete from motocicletta where id=?;");
+            ps.setLong(1, idMotociclettaToDelete);
 
             result = ps.executeUpdate();
 
